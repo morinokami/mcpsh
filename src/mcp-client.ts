@@ -1,6 +1,7 @@
 import readline from "node:readline/promises";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { z } from "zod";
 
 const Method = {
 	ping: "ping",
@@ -53,16 +54,35 @@ class MCPClient {
 	}
 
 	async processQuery(query: string) {
-		switch (query.toLowerCase()) {
+		const { method, params } = this.parseQuery(query);
+
+		switch (method) {
 			case Method.ping: {
-				this.printRequest({ method: Method.ping });
+				this.printRequest({ method });
 				const response = await this.mcp.ping();
 				this.printResponse(response);
 				break;
 			}
+			case Method.prompts.list: {
+				this.printRequest({ method, params });
+				const response = await this.mcp.listPrompts(params);
+				this.printResponse(response);
+				break;
+			}
+			case Method.resources.list: {
+				this.printRequest({ method, params });
+				const response = await this.mcp.listResources(params);
+				this.printResponse(response);
+				break;
+			}
+			case Method.tools.list: {
+				this.printRequest({ method, params });
+				const response = await this.mcp.listTools(params);
+				this.printResponse(response);
+				break;
+			}
 			default:
-				console.error(`Unknown method: ${query}`);
-				return;
+				throw new Error(`Unknown method: ${method}`);
 		}
 	}
 
@@ -80,7 +100,13 @@ class MCPClient {
 					break;
 				}
 
-				await this.processQuery(query);
+				try {
+					await this.processQuery(query);
+				} catch (error) {
+					if (error instanceof Error) {
+						console.error(error.message);
+					}
+				}
 			}
 		} finally {
 			rl.close();
@@ -91,11 +117,30 @@ class MCPClient {
 		await this.mcp.close();
 	}
 
-	printRequest(request: Record<string, unknown>) {
+	private parseQuery(query: string) {
+		// query = [method] [params]
+		const trimmedQuery = query.trim();
+		const dividerIndex = trimmedQuery.indexOf(" ");
+		if (dividerIndex === -1) {
+			return { method: trimmedQuery };
+		}
+
+		const method = trimmedQuery.slice(0, dividerIndex).trim();
+		const paramsString = trimmedQuery.slice(dividerIndex + 1).trim();
+		try {
+			const ParamsSchema = z.record(z.string(), z.unknown());
+			const params = ParamsSchema.parse(JSON.parse(paramsString));
+			return { method, params };
+		} catch (_error) {
+			throw new Error(`Invalid params: ${paramsString}`);
+		}
+	}
+
+	private printRequest(request: Record<string, unknown>) {
 		console.log("Request:", JSON.stringify(request, null, 2));
 	}
 
-	printResponse(response: Record<string, unknown>) {
+	private printResponse(response: Record<string, unknown>) {
 		console.log("Response:", JSON.stringify(response, null, 2));
 	}
 }
