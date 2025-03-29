@@ -2,6 +2,13 @@ import readline from "node:readline/promises";
 import { styleText } from "node:util";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import {
+	CallToolRequestSchema,
+	ListPromptsRequestSchema,
+	ListResourcesRequestSchema,
+	ListToolsRequestSchema,
+	PingRequestSchema,
+} from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 
 const Method = {
@@ -14,6 +21,7 @@ const Method = {
 	},
 	tools: {
 		list: "tools/list",
+		call: "tools/call",
 	},
 } as const;
 
@@ -59,26 +67,37 @@ class MCPClient {
 
 		switch (method) {
 			case Method.ping: {
-				this.printRequest({ method });
+				const request = PingRequestSchema.parse({ method });
+				this.printRequest(request);
 				const response = await this.mcp.ping();
 				this.printResponse(response);
 				break;
 			}
 			case Method.prompts.list: {
-				this.printRequest({ method, params });
-				const response = await this.mcp.listPrompts(params);
+				const request = ListPromptsRequestSchema.parse({ method, params });
+				this.printRequest(request);
+				const response = await this.mcp.listPrompts(request.params);
 				this.printResponse(response);
 				break;
 			}
 			case Method.resources.list: {
-				this.printRequest({ method, params });
-				const response = await this.mcp.listResources(params);
+				const request = ListResourcesRequestSchema.parse({ method, params });
+				this.printRequest(request);
+				const response = await this.mcp.listResources(request.params);
 				this.printResponse(response);
 				break;
 			}
 			case Method.tools.list: {
-				this.printRequest({ method, params });
-				const response = await this.mcp.listTools(params);
+				const request = ListToolsRequestSchema.parse({ method, params });
+				this.printRequest(request);
+				const response = await this.mcp.listTools(request.params);
+				this.printResponse(response);
+				break;
+			}
+			case Method.tools.call: {
+				const request = CallToolRequestSchema.parse({ method, params });
+				this.printRequest(request);
+				const response = await this.mcp.callTool(request.params);
 				this.printResponse(response);
 				break;
 			}
