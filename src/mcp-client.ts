@@ -1,4 +1,5 @@
 import readline from "node:readline/promises";
+import { styleText } from "node:util";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { z } from "zod";
@@ -137,11 +138,15 @@ class MCPClient {
 	}
 
 	private printRequest(request: Record<string, unknown>) {
-		console.log("Request:", JSON.stringify(request, null, 2));
+		console.log(
+			styleText("green", `Request: ${JSON.stringify(request, null, 2)}`),
+		);
 	}
 
 	private printResponse(response: Record<string, unknown>) {
-		console.log("Response:", JSON.stringify(response, null, 2));
+		console.log(
+			styleText("blue", `Response: ${JSON.stringify(response, null, 2)}`),
+		);
 	}
 }
 
