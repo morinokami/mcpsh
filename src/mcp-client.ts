@@ -10,6 +10,7 @@ import {
 	ListResourceTemplatesRequestSchema,
 	ListToolsRequestSchema,
 	PingRequestSchema,
+	ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 
@@ -21,6 +22,7 @@ const Method = {
 	},
 	resources: {
 		list: "resources/list",
+		read: "resources/read",
 		templates: {
 			list: "resources/templates/list",
 		},
@@ -97,6 +99,13 @@ class MCPClient {
 				const request = ListResourcesRequestSchema.parse({ method, params });
 				this.printRequest(request);
 				const response = await this.mcp.listResources(request.params);
+				this.printResponse(response);
+				break;
+			}
+			case Method.resources.read: {
+				const request = ReadResourceRequestSchema.parse({ method, params });
+				this.printRequest(request);
+				const response = await this.mcp.readResource(request.params);
 				this.printResponse(response);
 				break;
 			}
