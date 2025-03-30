@@ -6,6 +6,7 @@ import {
 	CallToolRequestSchema,
 	ListPromptsRequestSchema,
 	ListResourcesRequestSchema,
+	ListResourceTemplatesRequestSchema,
 	ListToolsRequestSchema,
 	PingRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
@@ -18,6 +19,9 @@ const Method = {
 	},
 	resources: {
 		list: "resources/list",
+		templates: {
+			list: "resources/templates/list",
+		},
 	},
 	tools: {
 		list: "tools/list",
@@ -84,6 +88,16 @@ class MCPClient {
 				const request = ListResourcesRequestSchema.parse({ method, params });
 				this.printRequest(request);
 				const response = await this.mcp.listResources(request.params);
+				this.printResponse(response);
+				break;
+			}
+			case Method.resources.templates.list: {
+				const request = ListResourceTemplatesRequestSchema.parse({
+					method,
+					params,
+				});
+				this.printRequest(request);
+				const response = await this.mcp.listResourceTemplates(request.params);
 				this.printResponse(response);
 				break;
 			}
