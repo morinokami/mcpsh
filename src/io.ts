@@ -13,5 +13,5 @@ export function printResponse(response: Record<string, unknown>) {
 }
 
 export function printError(error: Error) {
-	console.error(styleText("red", `Error: ${error.message}`));
+	console.error(styleText("red", `${error.message}`));
 }

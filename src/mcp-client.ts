@@ -13,7 +13,7 @@ import {
 	ReadResourceRequestSchema,
 	SetLevelRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-
+import { ZodError } from "zod";
 import { Method } from "./constants.js";
 import { printError, printRequest, printResponse } from "./io.js";
 import { parseQuery } from "./parse.js";
@@ -189,7 +189,9 @@ class MCPClient {
 					const { method, params } = parseQuery(query);
 					await this.processQuery(method, params);
 				} catch (error) {
-					if (error instanceof Error) {
+					if (error instanceof ZodError) {
+						printError(new Error(`Invalid query: ${error}`));
+					} else if (error instanceof Error) {
 						printError(error);
 					}
 				}
