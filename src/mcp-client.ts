@@ -12,6 +12,7 @@ import {
 	ListToolsRequestSchema,
 	PingRequestSchema,
 	ReadResourceRequestSchema,
+	SetLevelRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 
@@ -34,6 +35,9 @@ const Method = {
 	},
 	completion: {
 		complete: "completion/complete",
+	},
+	logging: {
+		setLevel: "logging/setLevel",
 	},
 } as const;
 
@@ -141,6 +145,13 @@ class MCPClient {
 				const request = CompleteRequestSchema.parse({ method, params });
 				this.printRequest(request);
 				const response = await this.mcp.complete(request.params);
+				this.printResponse(response);
+				break;
+			}
+			case Method.logging.setLevel: {
+				const request = SetLevelRequestSchema.parse({ method, params });
+				this.printRequest(request);
+				const response = await this.mcp.setLoggingLevel(request.params.level);
 				this.printResponse(response);
 				break;
 			}
