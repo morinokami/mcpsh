@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import MCPClient from "./mcp-client.js";
 
 async function main() {
