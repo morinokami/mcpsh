@@ -18,27 +18,15 @@ import { z } from "zod";
 
 const Method = {
 	ping: "ping",
-	prompts: {
-		list: "prompts/list",
-		get: "prompts/get",
-	},
-	resources: {
-		list: "resources/list",
-		read: "resources/read",
-		templates: {
-			list: "resources/templates/list",
-		},
-	},
-	tools: {
-		list: "tools/list",
-		call: "tools/call",
-	},
-	completion: {
-		complete: "completion/complete",
-	},
-	logging: {
-		setLevel: "logging/setLevel",
-	},
+	listPrompts: "prompts/list",
+	getPrompt: "prompts/get",
+	listResources: "resources/list",
+	readResource: "resources/read",
+	listResourceTemplates: "resources/templates/list",
+	listTools: "tools/list",
+	callTool: "tools/call",
+	complete: "completion/complete",
+	setLoggingLevel: "logging/setLevel",
 } as const;
 
 class MCPClient {
@@ -89,35 +77,35 @@ class MCPClient {
 				this.printResponse(response);
 				break;
 			}
-			case Method.prompts.list: {
+			case Method.listPrompts: {
 				const request = ListPromptsRequestSchema.parse({ method, params });
 				this.printRequest(request);
 				const response = await this.mcp.listPrompts(request.params);
 				this.printResponse(response);
 				break;
 			}
-			case Method.prompts.get: {
+			case Method.getPrompt: {
 				const request = GetPromptRequestSchema.parse({ method, params });
 				this.printRequest(request);
 				const response = await this.mcp.getPrompt(request.params);
 				this.printResponse(response);
 				break;
 			}
-			case Method.resources.list: {
+			case Method.listResources: {
 				const request = ListResourcesRequestSchema.parse({ method, params });
 				this.printRequest(request);
 				const response = await this.mcp.listResources(request.params);
 				this.printResponse(response);
 				break;
 			}
-			case Method.resources.read: {
+			case Method.readResource: {
 				const request = ReadResourceRequestSchema.parse({ method, params });
 				this.printRequest(request);
 				const response = await this.mcp.readResource(request.params);
 				this.printResponse(response);
 				break;
 			}
-			case Method.resources.templates.list: {
+			case Method.listResourceTemplates: {
 				const request = ListResourceTemplatesRequestSchema.parse({
 					method,
 					params,
@@ -127,28 +115,28 @@ class MCPClient {
 				this.printResponse(response);
 				break;
 			}
-			case Method.tools.list: {
+			case Method.listTools: {
 				const request = ListToolsRequestSchema.parse({ method, params });
 				this.printRequest(request);
 				const response = await this.mcp.listTools(request.params);
 				this.printResponse(response);
 				break;
 			}
-			case Method.tools.call: {
+			case Method.callTool: {
 				const request = CallToolRequestSchema.parse({ method, params });
 				this.printRequest(request);
 				const response = await this.mcp.callTool(request.params);
 				this.printResponse(response);
 				break;
 			}
-			case Method.completion.complete: {
+			case Method.complete: {
 				const request = CompleteRequestSchema.parse({ method, params });
 				this.printRequest(request);
 				const response = await this.mcp.complete(request.params);
 				this.printResponse(response);
 				break;
 			}
-			case Method.logging.setLevel: {
+			case Method.setLoggingLevel: {
 				const request = SetLevelRequestSchema.parse({ method, params });
 				this.printRequest(request);
 				const response = await this.mcp.setLoggingLevel(request.params.level);
@@ -167,6 +155,14 @@ class MCPClient {
 				output: process.stdout,
 				prompt: "> ",
 				historySize: 1000,
+				completer: (line) => {
+					// TODO: Use capabilities to filter completions
+					const methods = Object.values(Method);
+					const completions = methods.filter((method) =>
+						method.startsWith(line),
+					);
+					return [completions, line];
+				},
 			});
 
 			rl.prompt();
