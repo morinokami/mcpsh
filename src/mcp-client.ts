@@ -4,6 +4,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import {
 	CallToolRequestSchema,
+	GetPromptRequestSchema,
 	ListPromptsRequestSchema,
 	ListResourcesRequestSchema,
 	ListResourceTemplatesRequestSchema,
@@ -16,6 +17,7 @@ const Method = {
 	ping: "ping",
 	prompts: {
 		list: "prompts/list",
+		get: "prompts/get",
 	},
 	resources: {
 		list: "resources/list",
@@ -81,6 +83,13 @@ class MCPClient {
 				const request = ListPromptsRequestSchema.parse({ method, params });
 				this.printRequest(request);
 				const response = await this.mcp.listPrompts(request.params);
+				this.printResponse(response);
+				break;
+			}
+			case Method.prompts.get: {
+				const request = GetPromptRequestSchema.parse({ method, params });
+				this.printRequest(request);
+				const response = await this.mcp.getPrompt(request.params);
 				this.printResponse(response);
 				break;
 			}
