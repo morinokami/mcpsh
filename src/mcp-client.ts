@@ -4,6 +4,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import {
 	CallToolRequestSchema,
+	CompleteRequestSchema,
 	GetPromptRequestSchema,
 	ListPromptsRequestSchema,
 	ListResourcesRequestSchema,
@@ -30,6 +31,9 @@ const Method = {
 	tools: {
 		list: "tools/list",
 		call: "tools/call",
+	},
+	completion: {
+		complete: "completion/complete",
 	},
 } as const;
 
@@ -130,6 +134,13 @@ class MCPClient {
 				const request = CallToolRequestSchema.parse({ method, params });
 				this.printRequest(request);
 				const response = await this.mcp.callTool(request.params);
+				this.printResponse(response);
+				break;
+			}
+			case Method.completion.complete: {
+				const request = CompleteRequestSchema.parse({ method, params });
+				this.printRequest(request);
+				const response = await this.mcp.complete(request.params);
 				this.printResponse(response);
 				break;
 			}
