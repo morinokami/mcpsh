@@ -23,7 +23,15 @@ class MCPClient {
 	private transport: StdioClientTransport | null = null;
 
 	constructor() {
-		this.mcp = new Client({ name: "mcpsh", version: "0.0.1" });
+		this.mcp = new Client(
+			{ name: "mcpsh", version: "0.0.1" },
+			{
+				capabilities: {
+					// TODO: sampling: {},
+					// TODO: roots: {},
+				},
+			},
+		);
 	}
 
 	async connectToServer(serverScriptPath: string) {
@@ -49,8 +57,6 @@ class MCPClient {
 			if (version) {
 				console.log(`Connected to ${version.name} ${version.version}`);
 			}
-			// console.log("Capabilities:", this.mcp.getServerCapabilities());
-			// console.log("Instructions:", this.mcp.getInstructions());
 		} catch (error) {
 			console.log("Failed to connect to server: ", error);
 			throw error;
@@ -145,9 +151,16 @@ class MCPClient {
 				prompt: "> ",
 				historySize: 1000,
 				completer: (line) => {
-					// TODO: Use server capabilities to filter available completions
-					const methods = Object.values(Method);
-					const completions = methods.filter((method) =>
+					const capabilities = this.mcp.getServerCapabilities();
+					const availableMethods = Object.values(Method).filter((method) => {
+						if (method === "ping") {
+							return true;
+						}
+						return (
+							capabilities && capabilities[method.split("/")[0]] !== undefined
+						);
+					});
+					const completions = availableMethods.filter((method) =>
 						method.startsWith(line),
 					);
 					return [completions, line];
