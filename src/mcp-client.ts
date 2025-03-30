@@ -52,10 +52,12 @@ class MCPClient {
 			});
 			await this.mcp.connect(this.transport);
 
-			console.log("Connected to server");
-			console.log("Version:", this.mcp.getServerVersion());
-			console.log("Capabilities:", this.mcp.getServerCapabilities());
-			console.log("Instructions:", this.mcp.getInstructions());
+			const version = await this.mcp.getServerVersion();
+			if (version) {
+				console.log(`Connected to ${version.name} ${version.version}`);
+			}
+			// console.log("Capabilities:", this.mcp.getServerCapabilities());
+			// console.log("Instructions:", this.mcp.getInstructions());
 		} catch (error) {
 			console.log("Failed to connect to server: ", error);
 			throw error;
