@@ -3,24 +3,42 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import {
 	CallToolRequestSchema,
+	CancelledNotificationSchema,
 	CompleteRequestSchema,
 	GetPromptRequestSchema,
 	ListPromptsRequestSchema,
 	ListResourcesRequestSchema,
 	ListResourceTemplatesRequestSchema,
 	ListToolsRequestSchema,
+	LoggingMessageNotificationSchema,
+	type Notification,
 	PingRequestSchema,
+	ProgressNotificationSchema,
+	PromptListChangedNotificationSchema,
 	ReadResourceRequestSchema,
+	ResourceListChangedNotificationSchema,
+	ResourceUpdatedNotificationSchema,
 	SetLevelRequestSchema,
+	ToolListChangedNotificationSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { ZodError } from "zod";
+
 import { Method } from "./constants.js";
-import { printError, printRequest, printResponse } from "./io.js";
+import {
+	printError,
+	printNotification,
+	printRequest,
+	printResponse,
+} from "./io.js";
 import { parseQuery } from "./parse.js";
 
-class MCPClient {
+// TODO: add support for the Streamable HTTP transport
+// TODO: auth
+
+export class MCPClient {
 	private mcp: Client;
 	private transport: StdioClientTransport | null = null;
+	private rl: readline.Interface | null = null;
 
 	constructor() {
 		this.mcp = new Client(
@@ -53,6 +71,20 @@ class MCPClient {
 			});
 			await this.mcp.connect(this.transport);
 
+			[
+				CancelledNotificationSchema,
+				ProgressNotificationSchema,
+				LoggingMessageNotificationSchema,
+				ResourceUpdatedNotificationSchema,
+				ResourceListChangedNotificationSchema,
+				ToolListChangedNotificationSchema,
+				PromptListChangedNotificationSchema,
+			].forEach((schema) => {
+				this.mcp.setNotificationHandler(schema, (notification) =>
+					this.handleNotification(notification),
+				);
+			});
+
 			const version = await this.mcp.getServerVersion();
 			if (version) {
 				console.log(`Connected to ${version.name} ${version.version}`);
@@ -61,6 +93,72 @@ class MCPClient {
 			console.log("Failed to connect to server: ", error);
 			throw error;
 		}
+	}
+
+	async loop() {
+		return new Promise<void>((resolve) => {
+			this.rl = readline.createInterface({
+				input: process.stdin,
+				output: process.stdout,
+				prompt: "> ",
+				historySize: 1000,
+				completer: (line) => {
+					const capabilities = this.mcp.getServerCapabilities();
+					const availableMethods = Object.values(Method).filter((method) => {
+						if (method === "ping") {
+							return true;
+						}
+						return (
+							capabilities && capabilities[method.split("/")[0]] !== undefined
+						);
+					});
+					const completions = availableMethods.filter((method) =>
+						method.startsWith(line),
+					);
+					return [completions, line];
+				},
+			});
+
+			this.rl.prompt();
+
+			this.rl.on("SIGINT", () => this.rl?.close());
+
+			this.rl.on("line", async (line) => {
+				const query = line.trim();
+
+				if (query.length === 0) {
+					this.rl?.prompt();
+					return;
+				}
+
+				if (query === "quit" || query === "q") {
+					this.rl?.close();
+					resolve();
+					return;
+				}
+
+				try {
+					const { method, params } = parseQuery(query);
+					await this.processQuery(method, params);
+				} catch (error) {
+					if (error instanceof ZodError) {
+						printError(new Error(`Invalid query: ${error}`));
+					} else if (error instanceof Error) {
+						printError(error);
+					}
+				}
+
+				this.rl?.prompt();
+			});
+
+			this.rl.on("close", () => {
+				resolve();
+			});
+		});
+	}
+
+	async cleanup() {
+		await this.mcp.close();
 	}
 
 	async processQuery(method: string, params?: Record<string, unknown>) {
@@ -143,71 +241,18 @@ class MCPClient {
 		}
 	}
 
-	async loop() {
-		return new Promise<void>((resolve) => {
-			const rl = readline.createInterface({
-				input: process.stdin,
-				output: process.stdout,
-				prompt: "> ",
-				historySize: 1000,
-				completer: (line) => {
-					const capabilities = this.mcp.getServerCapabilities();
-					const availableMethods = Object.values(Method).filter((method) => {
-						if (method === "ping") {
-							return true;
-						}
-						return (
-							capabilities && capabilities[method.split("/")[0]] !== undefined
-						);
-					});
-					const completions = availableMethods.filter((method) =>
-						method.startsWith(line),
-					);
-					return [completions, line];
-				},
-			});
-
-			rl.prompt();
-
-			rl.on("SIGINT", () => rl.close());
-
-			rl.on("line", async (line) => {
-				const query = line.trim();
-
-				if (query.length === 0) {
-					rl.prompt();
-					return;
-				}
-
-				if (query === "quit" || query === "q") {
-					rl.close();
-					resolve();
-					return;
-				}
-
-				try {
-					const { method, params } = parseQuery(query);
-					await this.processQuery(method, params);
-				} catch (error) {
-					if (error instanceof ZodError) {
-						printError(new Error(`Invalid query: ${error}`));
-					} else if (error instanceof Error) {
-						printError(error);
-					}
-				}
-
-				rl.prompt();
-			});
-
-			rl.on("close", () => {
-				resolve();
-			});
-		});
-	}
-
-	async cleanup() {
-		await this.mcp.close();
+	async handleNotification(notification: Notification) {
+		if (this.rl) {
+			const currentPrompt = this.rl.getPrompt();
+			// print notification
+			this.rl.pause();
+			console.log();
+			printNotification(notification);
+			// restore prompt
+			this.rl.resume();
+			this.rl.setPrompt(currentPrompt);
+			this.rl.prompt();
+			this.rl.write(null, { ctrl: true, name: "e" });
+		}
 	}
 }
-
-export default MCPClient;

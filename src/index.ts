@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import MCPClient from "./mcp-client.js";
+import { MCPClient } from "./mcp-client.js";
 
 async function main() {
 	if (process.argv.length < 3) {
