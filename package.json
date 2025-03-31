@@ -1,7 +1,7 @@
 {
 	"name": "mcpsh",
 	"description": "A minimal CLI client for the Model Context Protocol",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"author": "Shinya Fujino <shf0811@gmail.com> (https://github.com/morinokami)",
 	"license": "MIT",
 	"type": "module",
