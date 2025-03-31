@@ -1,0 +1,5 @@
+---
+"mcpsh": minor
+---
+
+Handle notifications
