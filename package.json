@@ -16,6 +16,9 @@
 	],
 	"packageManager": "pnpm@10.7.0",
 	"bin": "./dist/index.js",
+	"engines": {
+		"node": ">=22.8.0"
+	},
 	"scripts": {
 		"start": "tsx src/index.ts",
 		"build": "tsc",
