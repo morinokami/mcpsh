@@ -2,13 +2,14 @@
 
 import { defineCommand, runMain } from "citty";
 
+import { description, name, version } from "../package.json";
 import { MCPClient } from "./mcp-client.js";
 
 const main = defineCommand({
 	meta: {
-		name: "mcpsh",
-		version: "0.1.1",
-		description: "Minimal CLI client for the Model Context Protocol",
+		name,
+		version,
+		description,
 	},
 	args: {
 		server: {
