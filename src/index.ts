@@ -1,21 +1,32 @@
 #!/usr/bin/env node
 
+import { defineCommand, runMain } from "citty";
+
 import { MCPClient } from "./mcp-client.js";
 
-async function main() {
-	if (process.argv.length < 3) {
-		console.log("Usage: npx mcpsh <path_to_server_script>");
-		return;
-	}
+const main = defineCommand({
+	meta: {
+		name: "mcpsh",
+		version: "0.1.0",
+		description: "Minimal CLI client for the Model Context Protocol",
+	},
+	args: {
+		server: {
+			type: "positional",
+			description: "Path to server script",
+			required: true,
+		},
+	},
+	async run({ args }) {
+		const mcpClient = new MCPClient();
+		try {
+			await mcpClient.connectToServer(args.server);
+			await mcpClient.loop();
+		} finally {
+			await mcpClient.cleanup();
+			process.exit(0);
+		}
+	},
+});
 
-	const mcpClient = new MCPClient();
-	try {
-		await mcpClient.connectToServer(process.argv[2]);
-		await mcpClient.loop();
-	} finally {
-		await mcpClient.cleanup();
-		process.exit(0);
-	}
-}
-
-main();
+runMain(main);
