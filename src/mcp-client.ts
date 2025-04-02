@@ -2,34 +2,31 @@ import readline from "node:readline/promises";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import {
+	type CallToolRequest,
 	CallToolRequestSchema,
-	CancelledNotificationSchema,
+	type CompleteRequest,
 	CompleteRequestSchema,
+	type GetPromptRequest,
 	GetPromptRequestSchema,
+	type ListPromptsRequest,
 	ListPromptsRequestSchema,
+	type ListResourcesRequest,
 	ListResourcesRequestSchema,
 	ListResourceTemplatesRequestSchema,
 	ListToolsRequestSchema,
-	LoggingMessageNotificationSchema,
+	type LoggingLevel,
 	type Notification,
 	PingRequestSchema,
-	ProgressNotificationSchema,
-	PromptListChangedNotificationSchema,
+	type ReadResourceRequest,
 	ReadResourceRequestSchema,
-	ResourceListChangedNotificationSchema,
-	ResourceUpdatedNotificationSchema,
+	type Request,
+	type Result,
 	SetLevelRequestSchema,
-	ToolListChangedNotificationSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { ZodError } from "zod";
 
-import { Method } from "./constants.js";
-import {
-	printError,
-	printNotification,
-	printRequest,
-	printResponse,
-} from "./io.js";
+import { Method, ServerNotificationSchemas } from "./constants.js";
+import { blue, green, red, yellow } from "./io.js";
 import { parseQuery } from "./parse.js";
 
 // TODO: add support for the Streamable HTTP transport
@@ -71,15 +68,7 @@ export class MCPClient {
 			});
 			await this.mcp.connect(this.transport);
 
-			[
-				CancelledNotificationSchema,
-				ProgressNotificationSchema,
-				LoggingMessageNotificationSchema,
-				ResourceUpdatedNotificationSchema,
-				ResourceListChangedNotificationSchema,
-				ToolListChangedNotificationSchema,
-				PromptListChangedNotificationSchema,
-			].forEach((schema) => {
+			ServerNotificationSchemas.forEach((schema) => {
 				this.mcp.setNotificationHandler(schema, (notification) =>
 					this.handleNotification(notification),
 				);
@@ -142,9 +131,9 @@ export class MCPClient {
 					await this.processQuery(method, params);
 				} catch (error) {
 					if (error instanceof ZodError) {
-						printError(new Error(`Invalid query: ${error}`));
+						red(`Invalid query: ${error}`);
 					} else if (error instanceof Error) {
-						printError(error);
+						red(error.message);
 					}
 				}
 
@@ -162,83 +151,75 @@ export class MCPClient {
 	}
 
 	async processQuery(method: string, params?: Record<string, unknown>) {
-		switch (method) {
-			case Method.ping: {
-				const request = PingRequestSchema.parse({ method });
-				printRequest(request);
-				const response = await this.mcp.ping();
-				printResponse(response);
-				break;
-			}
-			case Method.listPrompts: {
-				const request = ListPromptsRequestSchema.parse({ method, params });
-				printRequest(request);
-				const response = await this.mcp.listPrompts(request.params);
-				printResponse(response);
-				break;
-			}
-			case Method.getPrompt: {
-				const request = GetPromptRequestSchema.parse({ method, params });
-				printRequest(request);
-				const response = await this.mcp.getPrompt(request.params);
-				printResponse(response);
-				break;
-			}
-			case Method.listResources: {
-				const request = ListResourcesRequestSchema.parse({ method, params });
-				printRequest(request);
-				const response = await this.mcp.listResources(request.params);
-				printResponse(response);
-				break;
-			}
-			case Method.readResource: {
-				const request = ReadResourceRequestSchema.parse({ method, params });
-				printRequest(request);
-				const response = await this.mcp.readResource(request.params);
-				printResponse(response);
-				break;
-			}
-			case Method.listResourceTemplates: {
-				const request = ListResourceTemplatesRequestSchema.parse({
-					method,
-					params,
-				});
-				printRequest(request);
-				const response = await this.mcp.listResourceTemplates(request.params);
-				printResponse(response);
-				break;
-			}
-			case Method.listTools: {
-				const request = ListToolsRequestSchema.parse({ method, params });
-				printRequest(request);
-				const response = await this.mcp.listTools(request.params);
-				printResponse(response);
-				break;
-			}
-			case Method.callTool: {
-				const request = CallToolRequestSchema.parse({ method, params });
-				printRequest(request);
-				const response = await this.mcp.callTool(request.params);
-				printResponse(response);
-				break;
-			}
-			case Method.complete: {
-				const request = CompleteRequestSchema.parse({ method, params });
-				printRequest(request);
-				const response = await this.mcp.complete(request.params);
-				printResponse(response);
-				break;
-			}
-			case Method.setLoggingLevel: {
-				const request = SetLevelRequestSchema.parse({ method, params });
-				printRequest(request);
-				const response = await this.mcp.setLoggingLevel(request.params.level);
-				printResponse(response);
-				break;
-			}
-			default:
-				throw new Error(`Unknown method: ${method}`);
+		const methodHandlers = {
+			[Method.ping]: {
+				parse: (req: Request) => PingRequestSchema.parse(req),
+				dispatch: () => this.mcp.ping(),
+			},
+			[Method.listPrompts]: {
+				parse: (req: Request) => ListPromptsRequestSchema.parse(req),
+				dispatch: (params: ListPromptsRequest["params"]) =>
+					this.mcp.listPrompts(params),
+			},
+			[Method.getPrompt]: {
+				parse: (req: Request) => GetPromptRequestSchema.parse(req),
+				dispatch: (params: GetPromptRequest["params"]) =>
+					this.mcp.getPrompt(params),
+			},
+			[Method.listResources]: {
+				parse: (req: Request) => ListResourcesRequestSchema.parse(req),
+				dispatch: (params: ListResourcesRequest["params"]) =>
+					this.mcp.listResources(params),
+			},
+			[Method.readResource]: {
+				parse: (req: Request) => ReadResourceRequestSchema.parse(req),
+				dispatch: (params: ReadResourceRequest["params"]) =>
+					this.mcp.readResource(params),
+			},
+			[Method.listResourceTemplates]: {
+				parse: (req: Request) => ListResourceTemplatesRequestSchema.parse(req),
+				dispatch: (params: ListResourcesRequest["params"]) =>
+					this.mcp.listResourceTemplates(params),
+			},
+			[Method.listTools]: {
+				parse: (req: Request) => ListToolsRequestSchema.parse(req),
+				dispatch: (params: ListResourcesRequest["params"]) =>
+					this.mcp.listTools(params),
+			},
+			[Method.callTool]: {
+				parse: (req: Request) => CallToolRequestSchema.parse(req),
+				dispatch: (params: CallToolRequest["params"]) =>
+					this.mcp.callTool(params),
+			},
+			[Method.complete]: {
+				parse: (req: Request) => CompleteRequestSchema.parse(req),
+				dispatch: (params: CompleteRequest["params"]) =>
+					this.mcp.complete(params),
+			},
+			[Method.setLoggingLevel]: {
+				parse: (req: Request) => SetLevelRequestSchema.parse(req),
+				dispatch: (params: { level: LoggingLevel }) =>
+					this.mcp.setLoggingLevel(params.level),
+			},
+		} as const;
+
+		if (!(method in methodHandlers)) {
+			throw new Error(`Unknown method: ${method}`);
 		}
+
+		const { parse, dispatch } =
+			methodHandlers[method as keyof typeof methodHandlers];
+		const request = parse({ method, params });
+		green(`Request: ${JSON.stringify(request, null, 2)}`);
+
+		let response: Result;
+		if (method === Method.ping) {
+			response = await this.mcp.ping();
+		} else {
+			// biome-ignore lint/suspicious/noExplicitAny:
+			response = await dispatch(request.params as any);
+		}
+		blue(`Response: ${JSON.stringify(response, null, 2)}`);
 	}
 
 	async handleNotification(notification: Notification) {
@@ -247,7 +228,7 @@ export class MCPClient {
 			// print notification
 			this.rl.pause();
 			console.log();
-			printNotification(notification);
+			yellow(`Notification: ${JSON.stringify(notification, null, 2)}`);
 			// restore prompt
 			this.rl.resume();
 			this.rl.setPrompt(currentPrompt);

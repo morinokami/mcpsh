@@ -19,7 +19,7 @@ importers:
         version: 3.24.2
     devDependencies:
       '@biomejs/biome':
-        specifier: beta
+        specifier: 2.0.0-beta.1
         version: 2.0.0-beta.1
       '@changesets/changelog-github':
         specifier: 0.5.1

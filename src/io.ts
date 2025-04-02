@@ -1,27 +1,14 @@
 import { styleText } from "node:util";
-import type { Notification } from "@modelcontextprotocol/sdk/types.js";
 
-export function printRequest(request: Record<string, unknown>) {
-	console.log(
-		styleText("green", `Request: ${JSON.stringify(request, null, 2)}`),
-	);
+export function red(text: string) {
+	return console.log(styleText("red", text));
 }
-
-export function printResponse(response: Record<string, unknown>) {
-	console.log(
-		styleText("blue", `Response: ${JSON.stringify(response, null, 2)}`),
-	);
+export function green(text: string) {
+	return console.log(styleText("green", text));
 }
-
-export function printError(error: Error) {
-	console.error(styleText("red", `${error.message}`));
+export function blue(text: string) {
+	return console.log(styleText("blue", text));
 }
-
-export function printNotification(notification: Notification) {
-	console.log(
-		styleText(
-			"yellow",
-			`Notification: ${JSON.stringify(notification, null, 2)}`,
-		),
-	);
+export function yellow(text: string) {
+	return console.log(styleText("yellow", text));
 }
