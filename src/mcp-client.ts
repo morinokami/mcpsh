@@ -4,10 +4,13 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import {
 	type CallToolRequest,
 	CallToolRequestSchema,
+	type CancelledNotification,
+	CancelledNotificationSchema,
 	type CompleteRequest,
 	CompleteRequestSchema,
 	type GetPromptRequest,
 	GetPromptRequestSchema,
+	InitializedNotificationSchema,
 	type ListPromptsRequest,
 	ListPromptsRequestSchema,
 	type ListResourcesRequest,
@@ -17,10 +20,14 @@ import {
 	type LoggingLevel,
 	type Notification,
 	PingRequestSchema,
+	type ProgressNotification,
+	ProgressNotificationSchema,
 	type ReadResourceRequest,
 	ReadResourceRequestSchema,
 	type Request,
 	type Result,
+	type RootsListChangedNotification,
+	RootsListChangedNotificationSchema,
 	SetLevelRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { ZodError } from "zod";
@@ -93,14 +100,21 @@ export class MCPClient {
 				historySize: 1000,
 				completer: (line) => {
 					const capabilities = this.mcp.getServerCapabilities();
-					const availableMethods = Object.values(Method).filter((method) => {
-						if (method === "ping") {
-							return true;
-						}
-						return (
-							capabilities && capabilities[method.split("/")[0]] !== undefined
-						);
-					});
+					const availableMethods = Object.values(Method)
+						.filter((method) => {
+							if (method === Method.ping) {
+								return true;
+							}
+							return (
+								capabilities && capabilities[method.split("/")[0]] !== undefined
+							);
+						})
+						.concat([
+							Method.cancelledNotification,
+							Method.progressNotification,
+							Method.initializedNotification,
+							Method.rootsListChangedNotification,
+						]);
 					const completions = availableMethods.filter((method) =>
 						method.startsWith(line),
 					);
@@ -201,6 +215,35 @@ export class MCPClient {
 				dispatch: (params: { level: LoggingLevel }) =>
 					this.mcp.setLoggingLevel(params.level),
 			},
+			[Method.cancelledNotification]: {
+				parse: (req: Request) => CancelledNotificationSchema.parse(req),
+				dispatch: (params: CancelledNotification["params"]) =>
+					this.mcp.notification({
+						method: Method.cancelledNotification,
+						params,
+					}),
+			},
+			[Method.progressNotification]: {
+				parse: (req: Request) => ProgressNotificationSchema.parse(req),
+				dispatch: (params: ProgressNotification["params"]) =>
+					this.mcp.notification({
+						method: Method.progressNotification,
+						params,
+					}),
+			},
+			[Method.initializedNotification]: {
+				parse: (req: Request) => InitializedNotificationSchema.parse(req),
+				dispatch: () =>
+					this.mcp.notification({ method: Method.initializedNotification }),
+			},
+			[Method.rootsListChangedNotification]: {
+				parse: (req: Request) => RootsListChangedNotificationSchema.parse(req),
+				dispatch: (params: RootsListChangedNotification["params"]) =>
+					this.mcp.notification({
+						method: Method.rootsListChangedNotification,
+						params,
+					}),
+			},
 		} as const;
 
 		if (!(method in methodHandlers)) {
@@ -217,7 +260,11 @@ export class MCPClient {
 			response = await this.mcp.ping();
 		} else {
 			// biome-ignore lint/suspicious/noExplicitAny:
-			response = await dispatch(request.params as any);
+			const result = await dispatch(request.params as any);
+			if (!result) {
+				return;
+			}
+			response = result;
 		}
 		blue(`Response: ${JSON.stringify(response, null, 2)}`);
 	}

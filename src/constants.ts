@@ -19,6 +19,10 @@ export const Method = {
 	callTool: "tools/call",
 	complete: "completion/complete",
 	setLoggingLevel: "logging/setLevel",
+	cancelledNotification: "notifications/cancelled",
+	progressNotification: "notifications/progress",
+	initializedNotification: "notifications/initialized",
+	rootsListChangedNotification: "notifications/roots/list_changed",
 } as const;
 
 export const ServerNotificationSchemas = [
