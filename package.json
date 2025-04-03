@@ -22,6 +22,7 @@
 	"scripts": {
 		"start": "tsx src/index.ts",
 		"build": "unbuild",
+		"test": "node --test --experimental-strip-types",
 		"check": "biome check src",
 		"typecheck": "tsc --noEmit",
 		"publint": "publint",
