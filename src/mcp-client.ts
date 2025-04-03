@@ -32,6 +32,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { ZodError } from "zod";
 
+import { name, version } from "./meta.js";
 import { Method, ServerNotificationSchemas } from "./constants.js";
 import { blue, green, red, yellow } from "./io.js";
 import { parseQuery } from "./parse.js";
@@ -46,7 +47,7 @@ export class MCPClient {
 
 	constructor() {
 		this.mcp = new Client(
-			{ name: "mcpsh", version: "0.0.1" },
+			{ name, version },
 			{
 				capabilities: {
 					// TODO: sampling: {},
