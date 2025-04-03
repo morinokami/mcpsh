@@ -2,8 +2,8 @@
 
 import { defineCommand, runMain } from "citty";
 
-import { description, name, version } from "../package.json";
 import { MCPClient } from "./mcp-client.js";
+import { description, name, version } from "./meta.js";
 
 const main = defineCommand({
 	meta: {

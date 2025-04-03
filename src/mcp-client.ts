@@ -34,6 +34,7 @@ import { ZodError } from "zod";
 
 import { Method, ServerNotificationSchemas } from "./constants.js";
 import { blue, green, red, yellow } from "./io.js";
+import { name, version } from "./meta.js";
 import { parseQuery } from "./parse.js";
 
 // TODO: add support for the Streamable HTTP transport
@@ -46,7 +47,7 @@ export class MCPClient {
 
 	constructor() {
 		this.mcp = new Client(
-			{ name: "mcpsh", version: "0.0.1" },
+			{ name, version },
 			{
 				capabilities: {
 					// TODO: sampling: {},
