@@ -22,24 +22,23 @@ import {
 	PingRequestSchema,
 	type ProgressNotification,
 	ProgressNotificationSchema,
-	Prompt,
+	type Prompt,
 	type ReadResourceRequest,
 	ReadResourceRequestSchema,
 	type Request,
 	type Result,
 	type RootsListChangedNotification,
 	RootsListChangedNotificationSchema,
-	ServerCapabilities,
+	type ServerCapabilities,
 	SetLevelRequestSchema,
-	Tool,
+	type Tool,
 } from "@modelcontextprotocol/sdk/types.js";
 import { ZodError } from "zod";
-
+import { complete } from "./complete.js";
 import { Method, ServerNotificationSchemas } from "./constants.js";
 import { blue, green, red, yellow } from "./io.js";
 import { name, version } from "./meta.js";
 import { parseQuery } from "./parse.js";
-import { complete } from "./complete.js";
 
 // TODO: add support for the Streamable HTTP transport
 // TODO: auth
