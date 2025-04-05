@@ -23,6 +23,7 @@ export type CompletionSchema = {
 export function complete(
 	line: string,
 	capabilities: ServerCapabilities,
+	// biome-ignore lint/correctness/noUnusedVariables: not implemented yet
 	schema: CompletionSchema,
 ): CompleterResult {
 	const availableMethods = Object.values(Method)
@@ -42,6 +43,7 @@ export function complete(
 	}
 
 	try {
+		// biome-ignore lint/correctness/noUnusedVariables: not implemented yet
 		const { method, params } = parseQuery(line);
 
 		if (params === undefined) {

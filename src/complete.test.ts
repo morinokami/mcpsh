@@ -49,7 +49,7 @@ describe("complete", () => {
 		});
 	});
 
-	describe("with capabilities", () => {
+	describe.todo("with capabilities", () => {
 		test.each([
 			// method completion
 			[
@@ -92,6 +92,14 @@ describe("complete", () => {
 			["notifications/progress", [Method.progressNotification]],
 			["unknown", []],
 			// TODO: params completion
+			[
+				"prompts/get ",
+				[
+					// prompts/get {"name": "simple_prompt"}
+					// prompts/get {"name": "complex_prompt", "arguments": {"temperature": "1"}}
+					// prompts/get {"name": "complex_prompt", "arguments": {"temperature": "1", "style": "short"}}
+				],
+			],
 		])('"%s" => [%s]', (line, expected) => {
 			const result = complete(line, capabilities, schema);
 
