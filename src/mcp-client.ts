@@ -22,16 +22,19 @@ import {
 	PingRequestSchema,
 	type ProgressNotification,
 	ProgressNotificationSchema,
+	type Prompt,
 	type ReadResourceRequest,
 	ReadResourceRequestSchema,
 	type Request,
 	type Result,
 	type RootsListChangedNotification,
 	RootsListChangedNotificationSchema,
+	type ServerCapabilities,
 	SetLevelRequestSchema,
+	type Tool,
 } from "@modelcontextprotocol/sdk/types.js";
 import { ZodError } from "zod";
-
+import { complete } from "./complete.js";
 import { Method, ServerNotificationSchemas } from "./constants.js";
 import { blue, green, red, yellow } from "./io.js";
 import { name, version } from "./meta.js";
@@ -43,6 +46,9 @@ import { parseQuery } from "./parse.js";
 export class MCPClient {
 	private mcp: Client;
 	private transport: StdioClientTransport | null = null;
+	private capabilities: ServerCapabilities | null = null;
+	private tools: Tool[] = [];
+	private prompts: Prompt[] = [];
 	private rl: readline.Interface | null = null;
 
 	constructor() {
@@ -82,6 +88,16 @@ export class MCPClient {
 				);
 			});
 
+			this.capabilities = this.mcp.getServerCapabilities() ?? null;
+			if (this.capabilities?.tools) {
+				const toolsResult = await this.mcp.listTools();
+				this.tools = toolsResult.tools;
+			}
+			if (this.capabilities?.prompts) {
+				const promptsResult = await this.mcp.listPrompts();
+				this.prompts = promptsResult.prompts;
+			}
+
 			const version = await this.mcp.getServerVersion();
 			if (version) {
 				console.log(`Connected to ${version.name} ${version.version}`);
@@ -101,25 +117,10 @@ export class MCPClient {
 				historySize: 1000,
 				completer: (line) => {
 					const capabilities = this.mcp.getServerCapabilities();
-					const availableMethods = Object.values(Method)
-						.filter((method) => {
-							if (method === Method.ping) {
-								return true;
-							}
-							return (
-								capabilities && capabilities[method.split("/")[0]] !== undefined
-							);
-						})
-						.concat([
-							Method.cancelledNotification,
-							Method.progressNotification,
-							Method.initializedNotification,
-							Method.rootsListChangedNotification,
-						]);
-					const completions = availableMethods.filter((method) =>
-						method.startsWith(line),
-					);
-					return [completions, line];
+					return complete(line, capabilities ?? {}, {
+						tools: this.tools,
+						prompts: this.prompts,
+					});
 				},
 			});
 

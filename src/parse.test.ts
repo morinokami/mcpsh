@@ -1,5 +1,4 @@
-import assert from "node:assert/strict";
-import { describe, test } from "node:test";
+import { describe, expect, test } from "vitest";
 
 import { parseQuery } from "./parse.ts";
 
@@ -9,7 +8,7 @@ describe("parseQuery", () => {
 
 		const result = parseQuery(query);
 
-		assert.deepEqual(result, { method: "ping" });
+		expect(result).toEqual({ method: "ping" });
 	});
 
 	test("should parse a method with slashes", () => {
@@ -17,7 +16,7 @@ describe("parseQuery", () => {
 
 		const result = parseQuery(query);
 
-		assert.deepEqual(result, { method: "resources/templates/list" });
+		expect(result).toEqual({ method: "resources/templates/list" });
 	});
 
 	test("should parse a method with params", () => {
@@ -25,7 +24,7 @@ describe("parseQuery", () => {
 
 		const result = parseQuery(query);
 
-		assert.deepEqual(result, {
+		expect(result).toEqual({
 			method: "prompts/get",
 			params: {
 				name: "simple_prompt",
@@ -40,7 +39,7 @@ describe("parseQuery", () => {
 
 		const result = parseQuery(query);
 
-		assert.deepEqual(result, {
+		expect(result).toEqual({
 			method: "tools/call",
 			params: {
 				name: "echo",
@@ -56,7 +55,7 @@ describe("parseQuery", () => {
 
 		const result = parseQuery(query);
 
-		assert.deepEqual(result, {
+		expect(result).toEqual({
 			method: "prompts/get",
 			params: { name: "simple_prompt" },
 		});
@@ -65,16 +64,12 @@ describe("parseQuery", () => {
 	test("should throw error for invalid JSON params", () => {
 		const query = "invalid {not valid json}";
 
-		assert.throws(() => {
-			parseQuery(query);
-		}, /Invalid JSON format/);
+		expect(() => parseQuery(query)).toThrow(/Invalid JSON format/);
 	});
 
 	test("should throw error for non-object params", () => {
 		const query = "invalid [1, 2, 3]";
 
-		assert.throws(() => {
-			parseQuery(query);
-		}, /Invalid params/);
+		expect(() => parseQuery(query)).toThrow(/Invalid params/);
 	});
 });
