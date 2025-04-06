@@ -31,7 +31,11 @@ export function complete(
 			if (method === Method.ping) {
 				return true;
 			}
-			return capabilities && capabilities[method.split("/")[0]] !== undefined;
+			const methodCategory = method.split("/")[0];
+			if (methodCategory === "completion") {
+				return capabilities && capabilities.completions !== undefined;
+			}
+			return capabilities && capabilities[methodCategory] !== undefined;
 		})
 		.concat(ClientNotifications);
 
