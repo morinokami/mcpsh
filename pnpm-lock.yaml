@@ -31,8 +31,8 @@ importers:
         specifier: 22.13.16
         version: 22.13.16
       knip:
-        specifier: 5.46.4
-        version: 5.46.4(@types/node@22.13.16)(typescript@5.8.2)
+        specifier: 5.47.0
+        version: 5.47.0(@types/node@22.13.16)(typescript@5.8.2)
       pkg-pr-new:
         specifier: 0.0.42
         version: 0.0.42
@@ -1367,8 +1367,8 @@ packages:
   jsonfile@4.0.0:
     resolution: {integrity: sha512-m6F1R3z8jjlf2imQHS2Qez5sjKWQzbuuhuJ/FKYFRZvPE3PuHcSMVZzfsLhGVOkfd20obL5SWEBew5ShlquNxg==}
 
-  knip@5.46.4:
-    resolution: {integrity: sha512-iU2VGdXOPOj6Y8jEeixYMjlf2MCLZNjB63u2pfuP14gprRFjxgF+8wZiCgrjvogWt9H2WT+ytLYouXoEFAcm5g==}
+  knip@5.47.0:
+    resolution: {integrity: sha512-ikjijudvI81Iv49YJqgujJlGSXnCTFBTU9/NwHqW9wLA31IslEs+6npRL1TAdvT7Q+5mOOh6c8xrIwGd9sV+IQ==}
     engines: {node: '>=18.18.0'}
     hasBin: true
     peerDependencies:
@@ -3557,7 +3557,7 @@ snapshots:
     optionalDependencies:
       graceful-fs: 4.2.11
 
-  knip@5.46.4(@types/node@22.13.16)(typescript@5.8.2):
+  knip@5.47.0(@types/node@22.13.16)(typescript@5.8.2):
     dependencies:
       '@nodelib/fs.walk': 3.0.1
       '@snyk/github-codeowners': 1.1.0
