@@ -40,7 +40,7 @@
 		"@types/node": "22.14.0",
 		"knip": "5.47.0",
 		"pkg-pr-new": "0.0.42",
-		"publint": "0.3.10",
+		"publint": "0.3.12",
 		"tsx": "4.19.3",
 		"typescript": "5.8.3",
 		"unbuild": "3.5.0",
