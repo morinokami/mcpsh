@@ -19,8 +19,8 @@ importers:
         version: 3.24.2
     devDependencies:
       '@biomejs/biome':
-        specifier: 2.0.0-beta.1
-        version: 2.0.0-beta.1
+        specifier: 2.3.1
+        version: 2.3.1
       '@changesets/changelog-github':
         specifier: 0.5.1
         version: 0.5.1
@@ -66,55 +66,55 @@ packages:
     resolution: {integrity: sha512-VtPOkrdPHZsKc/clNqyi9WUA8TINkZ4cGk63UUE3u4pmB2k+ZMQRDuIOagv8UVd6j7k0T3+RRIb7beKTebNbcw==}
     engines: {node: '>=6.9.0'}
 
-  '@biomejs/biome@2.0.0-beta.1':
-    resolution: {integrity: sha512-MqRoy9CbTkrS45zW+S4u8p4kQUIFx0mGUWi789W1R3b1kXYIudEqsTKgXKtTGsI0kWOlvnjuKqwTrabjaGchhQ==}
+  '@biomejs/biome@2.3.1':
+    resolution: {integrity: sha512-A29evf1R72V5bo4o2EPxYMm5mtyGvzp2g+biZvRFx29nWebGyyeOSsDWGx3tuNNMFRepGwxmA9ZQ15mzfabK2w==}
     engines: {node: '>=14.21.3'}
     hasBin: true
 
-  '@biomejs/cli-darwin-arm64@2.0.0-beta.1':
-    resolution: {integrity: sha512-RaGmpNLl5NFooXaoCwvgvcuU6Am/rMZ3R48pQeCVxjrCcz1BIlKLTai5UosiedazW7JbXAvgXdSNizYG7ITlAQ==}
+  '@biomejs/cli-darwin-arm64@2.3.1':
+    resolution: {integrity: sha512-ombSf3MnTUueiYGN1SeI9tBCsDUhpWzOwS63Dove42osNh0PfE1cUtHFx6eZ1+MYCCLwXzlFlYFdrJ+U7h6LcA==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [darwin]
 
-  '@biomejs/cli-darwin-x64@2.0.0-beta.1':
-    resolution: {integrity: sha512-sTzSshkne7HKZFNfiIhmAji7gjtCBXvkTujZELCZWIZC7oj1Tjw/gvAzbdFj2UyHd5/i90pND4ybFOLQZm9gpg==}
+  '@biomejs/cli-darwin-x64@2.3.1':
+    resolution: {integrity: sha512-pcOfwyoQkrkbGvXxRvZNe5qgD797IowpJPovPX5biPk2FwMEV+INZqfCaz4G5bVq9hYnjwhRMamg11U4QsRXrQ==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [darwin]
 
-  '@biomejs/cli-linux-arm64-musl@2.0.0-beta.1':
-    resolution: {integrity: sha512-0MPUKzz9uBBxAYSJ+OlFi4+yGwiRcZeFqq39H0MxXCQ9MMpKJFH2Ek72fw8sXwG7Prn7EsW/3u1b7najyn1XGQ==}
+  '@biomejs/cli-linux-arm64-musl@2.3.1':
+    resolution: {integrity: sha512-+DZYv8l7FlUtTrWs1Tdt1KcNCAmRO87PyOnxKGunbWm5HKg1oZBSbIIPkjrCtDZaeqSG1DiGx7qF+CPsquQRcg==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
 
-  '@biomejs/cli-linux-arm64@2.0.0-beta.1':
-    resolution: {integrity: sha512-bxce2O4nooBmp20Ey0+IFIZyy/b0RVnciIQk9euCfAi9evq7SvFtMBYo3YUZej0KIvrau5H7tJk5OqmRJk2l+g==}
+  '@biomejs/cli-linux-arm64@2.3.1':
+    resolution: {integrity: sha512-td5O8pFIgLs8H1sAZsD6v+5quODihyEw4nv2R8z7swUfIK1FKk+15e4eiYVLcAE4jUqngvh4j3JCNgg0Y4o4IQ==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
 
-  '@biomejs/cli-linux-x64-musl@2.0.0-beta.1':
-    resolution: {integrity: sha512-dFvisnP1hFpVILNw0PZfs8piBwe8+aykO04Tb/4AJDVVzKkGgJfwSefwo4jqzO/Wk/Zruvhcp1nKbjgRXM+vDg==}
+  '@biomejs/cli-linux-x64-musl@2.3.1':
+    resolution: {integrity: sha512-Y3Ob4nqgv38Mh+6EGHltuN+Cq8aj/gyMTJYzkFZV2AEj+9XzoXB9VNljz9pjfFNHUxvLEV4b55VWyxozQTBaUQ==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
 
-  '@biomejs/cli-linux-x64@2.0.0-beta.1':
-    resolution: {integrity: sha512-6P/AtJv4hOH8mu8ez0c4UInUpiet9NEoF25+O7OPyb4w6ZHJMp2qzvayJS7TKrTQzE5KUvSiNsACGRz34DzUkg==}
+  '@biomejs/cli-linux-x64@2.3.1':
+    resolution: {integrity: sha512-PYWgEO7up7XYwSAArOpzsVCiqxBCXy53gsReAb1kKYIyXaoAlhBaBMvxR/k2Rm9aTuZ662locXUmPk/Aj+Xu+Q==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
 
-  '@biomejs/cli-win32-arm64@2.0.0-beta.1':
-    resolution: {integrity: sha512-0C9YSqWHf2cJGnjKDbLi49xv6H9IfqbDsFav7X557PqwY64O6IKWqcmZzi/PkDFHjQM9opU6uhKapeGKGDxziQ==}
+  '@biomejs/cli-win32-arm64@2.3.1':
+    resolution: {integrity: sha512-RHIG/zgo+69idUqVvV3n8+j58dKYABRpMyDmfWu2TITC+jwGPiEaT0Q3RKD+kQHiS80mpBrST0iUGeEXT0bU9A==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [win32]
 
-  '@biomejs/cli-win32-x64@2.0.0-beta.1':
-    resolution: {integrity: sha512-o8W6+DX0YRjt1kS8Y3ismq6EkjwiVDv7X0TEpfnFywoVG8HoJ7G7/m9r8LM1yE46WI3maPH2A0MoVpQ1ZNG++A==}
+  '@biomejs/cli-win32-x64@2.3.1':
+    resolution: {integrity: sha512-izl30JJ5Dp10mi90Eko47zhxE6pYyWPcnX1NQxKpL/yMhXxf95oLTzfpu4q+MDBh/gemNqyJEwjBpe0MT5iWPA==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [win32]
@@ -2277,39 +2277,39 @@ snapshots:
     dependencies:
       regenerator-runtime: 0.14.1
 
-  '@biomejs/biome@2.0.0-beta.1':
+  '@biomejs/biome@2.3.1':
     optionalDependencies:
-      '@biomejs/cli-darwin-arm64': 2.0.0-beta.1
-      '@biomejs/cli-darwin-x64': 2.0.0-beta.1
-      '@biomejs/cli-linux-arm64': 2.0.0-beta.1
-      '@biomejs/cli-linux-arm64-musl': 2.0.0-beta.1
-      '@biomejs/cli-linux-x64': 2.0.0-beta.1
-      '@biomejs/cli-linux-x64-musl': 2.0.0-beta.1
-      '@biomejs/cli-win32-arm64': 2.0.0-beta.1
-      '@biomejs/cli-win32-x64': 2.0.0-beta.1
+      '@biomejs/cli-darwin-arm64': 2.3.1
+      '@biomejs/cli-darwin-x64': 2.3.1
+      '@biomejs/cli-linux-arm64': 2.3.1
+      '@biomejs/cli-linux-arm64-musl': 2.3.1
+      '@biomejs/cli-linux-x64': 2.3.1
+      '@biomejs/cli-linux-x64-musl': 2.3.1
+      '@biomejs/cli-win32-arm64': 2.3.1
+      '@biomejs/cli-win32-x64': 2.3.1
 
-  '@biomejs/cli-darwin-arm64@2.0.0-beta.1':
+  '@biomejs/cli-darwin-arm64@2.3.1':
     optional: true
 
-  '@biomejs/cli-darwin-x64@2.0.0-beta.1':
+  '@biomejs/cli-darwin-x64@2.3.1':
     optional: true
 
-  '@biomejs/cli-linux-arm64-musl@2.0.0-beta.1':
+  '@biomejs/cli-linux-arm64-musl@2.3.1':
     optional: true
 
-  '@biomejs/cli-linux-arm64@2.0.0-beta.1':
+  '@biomejs/cli-linux-arm64@2.3.1':
     optional: true
 
-  '@biomejs/cli-linux-x64-musl@2.0.0-beta.1':
+  '@biomejs/cli-linux-x64-musl@2.3.1':
     optional: true
 
-  '@biomejs/cli-linux-x64@2.0.0-beta.1':
+  '@biomejs/cli-linux-x64@2.3.1':
     optional: true
 
-  '@biomejs/cli-win32-arm64@2.0.0-beta.1':
+  '@biomejs/cli-win32-arm64@2.3.1':
     optional: true
 
-  '@biomejs/cli-win32-x64@2.0.0-beta.1':
+  '@biomejs/cli-win32-x64@2.3.1':
     optional: true
 
   '@changesets/apply-release-plan@7.0.10':
